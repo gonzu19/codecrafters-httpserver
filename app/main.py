@@ -15,10 +15,14 @@ def process_socket(server_socket) -> None:
     # Receive the request from the client, 1024 is the maximum buffsize
     request = client_socket.recv(1024).decode('utf-8')
     request_array = request.split()
+    print(request_array)
     print(f"Received request:\n{request}")
+    path = request_array[1]
     # Prepare an HTTP response
-    if request_array[1] == "/":
-        response = "HTTP/1.1 200 OK\r\n\r\n"
+    if path == "/":
+        response = root_endpoint()
+    elif path.startswith("/echo/"):
+        response = echo_endpoint(path)
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
     # Send the response to the client
@@ -27,6 +31,19 @@ def process_socket(server_socket) -> None:
     # Close the client connection
     client_socket.close()
 
+def echo_endpoint(path:str) -> str:
+    path_array = path.split("/")
+    echo = path_array[-1]
+    response = "HTTP/1.1 404 Not Found\r\n"
+    response += "Content-Type: text/plain\r\n"
+    response += f"Content-Length: {len(echo)+2}\r\n"
+    response += "\r\n"
+    response += f"{echo}\r\n"
+    return response
+
+def root_endpoint() -> str:
+    response = "HTTP/1.1 200 OK\r\n\r\n"
+    return response
 
 def main():
     server_socket = start_server()
