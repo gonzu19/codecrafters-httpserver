@@ -21,7 +21,7 @@ def main():
 
         # Prepare an HTTP response
         if request_array[1] == "/":
-            response = "HTTP/1.1 200 OK\r\n"
+            response = "HTTP/1.1 200 OK\r\n\r\n"
         else:
             response = "HTTP/1.1 404 Not Found\r\n\r\n"
 
