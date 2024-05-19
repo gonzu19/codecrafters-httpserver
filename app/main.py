@@ -17,22 +17,33 @@ def process_socket(server_socket) -> None:
     request_array = request.split()
     print(request_array)
     print(f"Received request:\n{request}")
-    path = request_array[1]
-    response = build_response(path=path)
+    response = build_response(request_array=request_array)
     # Send the response to the client
     client_socket.sendall(response.encode('utf-8'))
     print("Sent response:\n" + response)
     # Close the client connection
     client_socket.close()
 
-def build_response(path:str) -> str:
+def build_response(request_array:str) -> str:
     """prepare http response"""
+    path = request_array[1]
+    user_agent = request_array[6]
     if path == "/":
         response = root_endpoint()
     elif path.startswith("/echo/"):
         response = echo_endpoint(path)
+    elif path == "/user-agent":
+        response = user_agent_endpoint(agent=user_agent)
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
+    return response
+
+def user_agent_endpoint(agent:str) -> str:
+    response = "HTTP/1.1 200 OK\r\n"
+    response += "Content-Type: text/plain\r\n"
+    response += f"Content-Length: {len(agent)}\r\n"
+    response += "\r\n"
+    response += f"{agent}\r\n"
     return response
 
 
