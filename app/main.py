@@ -29,18 +29,21 @@ def build_response(request_array:str) -> str:
     path = request_array[1]
     print(len(request_array))
     print(request_array)
-    user_agent = request_array[6]
     if path == "/":
         response = root_endpoint()
     elif path.startswith("/echo/"):
         response = echo_endpoint(path)
     elif path == "/user-agent":
-        response = user_agent_endpoint(agent=user_agent)
+        response = user_agent_endpoint(request_array=request_array)
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
     return response
 
-def user_agent_endpoint(agent:str) -> str:
+def user_agent_endpoint(request_array:str) -> str:
+    agent = ""
+    for index,content in enumerate(request_array):
+        if content == "User-Agent:":
+            agent = request_array[index+1]
     response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
     response += f"Content-Length: {len(agent)}\r\n"
