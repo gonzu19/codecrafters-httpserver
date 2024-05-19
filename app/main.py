@@ -27,6 +27,7 @@ def process_socket(server_socket) -> None:
 def build_response(request_array:str) -> str:
     """prepare http response"""
     path = request_array[1]
+    print(len(request_array))
     user_agent = request_array[6]
     if path == "/":
         response = root_endpoint()
