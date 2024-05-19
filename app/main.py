@@ -23,7 +23,7 @@ def main():
         if request_array[1] == "/":
             response = "HTTP/1.1 200 OK\r\n"
         else:
-            response = "HTTP/1.1 404 Not Found\r\n"
+            response = "HTTP/1.1 404 Not Found\r\n\r\n"
 
 
         # Send the response to the client
