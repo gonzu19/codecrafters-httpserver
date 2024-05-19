@@ -36,7 +36,7 @@ def echo_endpoint(path:str) -> str:
     echo = path_array[-1]
     response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
-    response += f"Content-Length: {len(echo)+2}\r\n"
+    response += f"Content-Length: {len(echo)}\r\n"
     response += "\r\n"
     response += f"{echo}\r\n"
     return response
