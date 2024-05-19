@@ -34,7 +34,7 @@ def process_socket(server_socket) -> None:
 def echo_endpoint(path:str) -> str:
     path_array = path.split("/")
     echo = path_array[-1]
-    response = "HTTP/1.1 404 Not Found\r\n"
+    response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
     response += f"Content-Length: {len(echo)+2}\r\n"
     response += "\r\n"
