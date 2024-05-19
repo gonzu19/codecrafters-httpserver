@@ -16,16 +16,15 @@ def main():
 
         # Receive the request from the client, 1024 is the maximum buffsize
         request = client_socket.recv(1024).decode('utf-8')
+        request_array = request.split()
         print(f"Received request:\n{request}")
 
         # Prepare an HTTP response
-        response = "HTTP/1.1 200 OK\r\n"
-        response += "Content-Type: text/plain\r\n"
-        #The size is 13 because its the size of "HTTP/1.1 200 "
-        response += "Content-Length: 13\r\n"
-        response += "\r\n"
-        body = "Hello, world!"
-        response += body
+        if request_array[1] == "/":
+            response = "HTTP/1.1 200 OK\r\n"
+        else:
+            response = "HTTP/1.1 404 NOK\r\n"
+
 
         # Send the response to the client
         client_socket.sendall(response.encode('utf-8'))
