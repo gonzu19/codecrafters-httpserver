@@ -1,4 +1,5 @@
 import socket
+import sys
 
 def start_server():
     # Print statements for debugging
@@ -48,11 +49,12 @@ def read_file(filename:str):
 
 def file_endpoint(path:str) -> str:
     path_array = path.split("/")
-    file = path_array[-1]
+    file = sys.argv[2]
+    file += path_array[-1]
     content = read_file(filename=file)
     if content:
         response = "HTTP/1.1 200 OK\r\n"
-        response += "Content-Type: text/plain\r\n"
+        response += "Content-Type: application/octet-stream\r\n"
         response += f"Content-Length: {len(content)}\r\n"
         response += "\r\n"
         response += f"{content}\r\n"
