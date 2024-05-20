@@ -33,9 +33,33 @@ def build_response(request_array:str) -> str:
         response = echo_endpoint(path)
     elif path == "/user-agent":
         response = user_agent_endpoint(request_array=request_array)
+    elif path.startswith("/file/"):
+        response = file_endpoint(path)
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
     return response
+
+def read_file(filename:str):
+    try:
+        with open(filename,"r") as file:
+            return file.read()
+    except FileNotFoundError:
+        return False
+
+def file_endpoint(path:str) -> str:
+    path_array = path.split("/")
+    file = path_array[-1]
+    content = read_file(filename=file)
+    if content:
+        response = "HTTP/1.1 200 OK\r\n"
+        response += "Content-Type: text/plain\r\n"
+        response += f"Content-Length: {len(content)}\r\n"
+        response += "\r\n"
+        response += f"{content}\r\n"
+        return response
+    else:
+        return "HTTP/1.1 404 Not Found\r\n\r\n"
+
 
 def user_agent_endpoint(request_array:str) -> str:
     agent = ""
