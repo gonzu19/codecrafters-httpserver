@@ -62,7 +62,7 @@ def post_file_endpoint(path:str,content:str) -> str:
     print(file)
     write_file(filename=file,content=content)
     if content:
-        response = "HTTP/1.1 201 OK\r\n\r\n"
+        response = "HTTP/1.1 201 CREATED\r\n\r\n"
         return response
     else:
         return "HTTP/1.1 404 Not Found\r\n\r\n"
