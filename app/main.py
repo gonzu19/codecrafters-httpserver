@@ -51,6 +51,7 @@ def file_endpoint(path:str) -> str:
     path_array = path.split("/")
     file = sys.argv[2]
     file += path_array[-1]
+    print(file)
     content = read_file(filename=file)
     if content:
         response = "HTTP/1.1 200 OK\r\n"
