@@ -4,7 +4,6 @@ import sys
 
 def start_server():
     # Print statements for debugging
-    print("Server is starting...")
     # Create and configure the server socket
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     print("Server is listening on localhost:4221")
@@ -13,11 +12,12 @@ def start_server():
 def process_socket(server_socket) -> None:
     # Accept a client connection
     client_socket, client_address = server_socket.accept()
-    print(f"Accepted connection from {client_address}")
+    #print(f"Accepted connection from {client_address}")
     # Receive the request from the client, 1024 is the maximum buffsize
     request = client_socket.recv(1024).decode('utf-8')
     request_array = request.split()
     print(request_array)
+    print("---------socket_start-----------")
     print(f"Received request:\n{request}")
     response = build_response(request_array=request_array)
     # Send the response to the client
@@ -25,15 +25,20 @@ def process_socket(server_socket) -> None:
     print("Sent response:\n" + response)
     # Close the client connection
     client_socket.close()
+    print("---------socket_closed-----------")
 
 def parse_body_content(request_array:list) -> str:
+    content_start = -1
     for index,element in enumerate(request_array):
-        if element == "Content-length":
+        if element == "Content-Length:" or element == "Content-Type:":
             content_start = index+2
+    print(f"content_start: {content_start}")
     content = request_array[content_start:]
+    result = ""
     if content:
         for elem in content:
-            result = f"{elem} "
+            result = f"{result}{elem} "
+        print(result)
         return result.rstrip()
     else:
         return ""
@@ -42,7 +47,6 @@ def build_response(request_array:list) -> str:
     """prepare http response"""
     path = request_array[1]
     action = request_array[0]
-    content = request_array[-1]
     if path == "/":
         response = root_endpoint()
     elif path.startswith("/echo/"):
@@ -52,8 +56,9 @@ def build_response(request_array:list) -> str:
     elif path.startswith("/files/") and action == "GET":
         response = get_file_endpoint(path)
     elif path.startswith("/files/") and action == "POST":
-        response = post_file_endpoint(path,content=content)
+        response = post_file_endpoint(path,request_array=request_array)
     else:
+        print("DEBUG: NO ENDPOINT FOUND")
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
     return response
 
@@ -68,17 +73,16 @@ def write_file(filename:str,content:str):
     with open(filename,"w+") as file:
         file.write(content)
 
-def post_file_endpoint(path:str,content:str) -> str:
+def post_file_endpoint(path:str,request_array:list) -> str:
+    content = parse_body_content(request_array=request_array)
+    print(f"debug;post_file_endpoint: {content}")
     path_array = path.split("/")
     file = sys.argv[2] #this is the file path passed as a parameter
     file += path_array[-1]
     print(file)
     write_file(filename=file,content=content)
-    if content:
-        response = "HTTP/1.1 201 Created\r\n\r\n"
-        return response
-    else:
-        return "HTTP/1.1 404 Not Found\r\n\r\n"
+    response = "HTTP/1.1 201 Created\r\n\r\n"
+    return response
 
 
 def get_file_endpoint(path:str) -> str:
