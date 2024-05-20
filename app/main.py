@@ -1,3 +1,4 @@
+from os import confstr
 import socket
 import sys
 
@@ -26,11 +27,10 @@ def process_socket(server_socket) -> None:
     client_socket.close()
 
 def parse_body_content(request_array:list) -> str:
-    content = None
     for index,element in enumerate(request_array):
         if element == "Content-length":
-            content = request_array[index+2:]
-        result = ""
+            content_start = index+2
+    content = request_array[content_start:]
     if content:
         for elem in content:
             result = f"{elem} "
