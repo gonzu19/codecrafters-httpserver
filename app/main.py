@@ -44,19 +44,22 @@ def build_response(request_array:list) -> str:
     """prepare http response"""
     path = request_array[1]
     action = request_array[0]
+    compression = get_compression_parameter(request_array=request_array)
     if path == "/":
         response = root_endpoint()
     elif path.startswith("/echo/"):
-        response = echo_endpoint(path)
+        response = echo_endpoint(path,compression=compression)
     elif path == "/user-agent":
-        response = user_agent_endpoint(request_array=request_array)
+        response = user_agent_endpoint(request_array=request_array,compression=compression)
     elif path.startswith("/files/") and action == "GET":
-        response = get_file_endpoint(path)
+        response = get_file_endpoint(path,compression=compression)
     elif path.startswith("/files/") and action == "POST":
-        response = post_file_endpoint(path,request_array=request_array)
+        response = post_file_endpoint(path,request_array=request_array,compression=compression)
     else:
         print("DEBUG: NO ENDPOINT FOUND")
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
+        if compression != "":
+            response += f"Content-Encoding: {compression}\r\n"
     return response
 
 def get_compression_parameter(request_array:list) -> str:
