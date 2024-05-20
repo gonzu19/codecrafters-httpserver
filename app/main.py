@@ -28,14 +28,18 @@ def process_socket(server_socket) -> None:
 def build_response(request_array:str) -> str:
     """prepare http response"""
     path = request_array[1]
+    action = request_array[0]
+    content = request_array[-1]
     if path == "/":
         response = root_endpoint()
     elif path.startswith("/echo/"):
         response = echo_endpoint(path)
     elif path == "/user-agent":
         response = user_agent_endpoint(request_array=request_array)
-    elif path.startswith("/files/"):
-        response = file_endpoint(path)
+    elif path.startswith("/files/") and action == "GET":
+        response = get_file_endpoint(path)
+    elif path.startswith("/files/") and action == "POST":
+        response = post_file_endpoint(path,content=content)
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
     return response
@@ -47,7 +51,24 @@ def read_file(filename:str):
     except FileNotFoundError:
         return False
 
-def file_endpoint(path:str) -> str:
+def write_file(filename:str,content:str):
+    with open(filename,"w+") as file:
+        file.write(content)
+
+def post_file_endpoint(path:str,content:str) -> str:
+    path_array = path.split("/")
+    file = sys.argv[2] #this is the file path passed as a parameter
+    file += path_array[-1]
+    print(file)
+    write_file(filename=file,content=content)
+    if content:
+        response = "HTTP/1.1 201 OK\r\n\r\n"
+        return response
+    else:
+        return "HTTP/1.1 404 Not Found\r\n\r\n"
+
+
+def get_file_endpoint(path:str) -> str:
     path_array = path.split("/")
     file = sys.argv[2]
     file += path_array[-1]
