@@ -86,7 +86,7 @@ def post_file_endpoint(path:str,request_array:list,compression:str="") -> str:
     write_file(filename=file,content=content)
     response = "HTTP/1.1 201 Created\r\n\r\n"
     if compression != "":
-        response += f"Accept-Encoding: {compression}\r\n"
+        response += f"Content-Encoding: {compression}\r\n"
     return response
 
 
@@ -99,7 +99,7 @@ def get_file_endpoint(path:str,compression:str="") -> str:
         response = "HTTP/1.1 200 OK\r\n"
         response += "Content-Type: application/octet-stream\r\n"
         if compression != "":
-            response += f"Accept-Encoding: {compression}\r\n"
+            response += f"Content-Encoding: {compression}\r\n"
         response += f"Content-Length: {len(content)}\r\n"
         response += "\r\n"
         response += f"{content}\r\n"
@@ -116,7 +116,7 @@ def user_agent_endpoint(request_array:list,compression:str="") -> str:
     response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
     if compression != "":
-        response += f"Accept-Encoding: {compression}\r\n"
+        response += f"Content-Encoding: {compression}\r\n"
     response += f"Content-Length: {len(agent)}\r\n"
     response += "\r\n"
     response += f"{agent}\r\n"
@@ -128,7 +128,7 @@ def echo_endpoint(path:str,compression:str="") -> str:
     response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
     if compression != "":
-        response += f"Accept-Encoding: {compression}\r\n"
+        response += f"Content-Encoding: {compression}\r\n"
     response += f"Content-Length: {len(echo)}\r\n"
     response += "\r\n"
     response += f"{echo}\r\n"
