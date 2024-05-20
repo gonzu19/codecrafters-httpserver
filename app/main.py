@@ -16,9 +16,8 @@ def process_socket(server_socket) -> None:
     # Receive the request from the client, 1024 is the maximum buffsize
     request = client_socket.recv(1024).decode('utf-8')
     request_array = request.split()
-    print(request_array)
     print("---------socket_start-----------")
-    print(f"Received request:\n{request}")
+    print(f"Received request:\n{request_array}")
     response = build_response(request_array=request_array)
     # Send the response to the client
     client_socket.sendall(response.encode('utf-8'))
@@ -32,13 +31,11 @@ def parse_body_content(request_array:list) -> str:
     for index,element in enumerate(request_array):
         if element == "Content-Length:" or element == "Content-Type:":
             content_start = index+2
-    print(f"content_start: {content_start}")
     content = request_array[content_start:]
     result = ""
     if content:
         for elem in content:
             result = f"{result}{elem} "
-        print(result)
         return result.rstrip()
     else:
         return ""
@@ -75,11 +72,9 @@ def write_file(filename:str,content:str):
 
 def post_file_endpoint(path:str,request_array:list) -> str:
     content = parse_body_content(request_array=request_array)
-    print(f"debug;post_file_endpoint: {content}")
     path_array = path.split("/")
     file = sys.argv[2] #this is the file path passed as a parameter
     file += path_array[-1]
-    print(file)
     write_file(filename=file,content=content)
     response = "HTTP/1.1 201 Created\r\n\r\n"
     return response
@@ -89,7 +84,6 @@ def get_file_endpoint(path:str) -> str:
     path_array = path.split("/")
     file = sys.argv[2]
     file += path_array[-1]
-    print(file)
     content = read_file(filename=file)
     if content:
         response = "HTTP/1.1 200 OK\r\n"
