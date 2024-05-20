@@ -49,7 +49,6 @@ def user_agent_endpoint(request_array:str) -> str:
     response += f"{agent}\r\n"
     return response
 
-
 def echo_endpoint(path:str) -> str:
     path_array = path.split("/")
     echo = path_array[-1]
