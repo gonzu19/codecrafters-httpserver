@@ -34,7 +34,7 @@ def build_response(request_array:str) -> str:
         response = echo_endpoint(path)
     elif path == "/user-agent":
         response = user_agent_endpoint(request_array=request_array)
-    elif path.startswith("/file/"):
+    elif path.startswith("/files/"):
         response = file_endpoint(path)
     else:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
