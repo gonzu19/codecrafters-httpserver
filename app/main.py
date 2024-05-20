@@ -49,7 +49,7 @@ def read_file(filename:str):
 
 def file_endpoint(path:str) -> str:
     path_array = path.split("/")
-    file = sys.argv[1]
+    file = sys.argv[2]
     file += path_array[-1]
     print(file)
     content = read_file(filename=file)
