@@ -59,6 +59,14 @@ def build_response(request_array:list) -> str:
         response = "HTTP/1.1 404 Not Found\r\n\r\n"
     return response
 
+def get_compression_parameter(request_array:list) -> str:
+    if "Accept-Encoding:" not in request_array:
+        return ""
+    for index,element in request_array:
+        if element == "Accept-Encoding:":
+            compression = request_array[index+1]
+    return compression
+
 def read_file(filename:str):
     try:
         with open(filename,"r") as file:
@@ -70,17 +78,19 @@ def write_file(filename:str,content:str):
     with open(filename,"w+") as file:
         file.write(content)
 
-def post_file_endpoint(path:str,request_array:list) -> str:
+def post_file_endpoint(path:str,request_array:list,compression:str="") -> str:
     content = parse_body_content(request_array=request_array)
     path_array = path.split("/")
     file = sys.argv[2] #this is the file path passed as a parameter
     file += path_array[-1]
     write_file(filename=file,content=content)
     response = "HTTP/1.1 201 Created\r\n\r\n"
+    if compression != "":
+        response += f"Accept-Encoding: {compression}\r\n"
     return response
 
 
-def get_file_endpoint(path:str) -> str:
+def get_file_endpoint(path:str,compression:str="") -> str:
     path_array = path.split("/")
     file = sys.argv[2]
     file += path_array[-1]
@@ -88,6 +98,8 @@ def get_file_endpoint(path:str) -> str:
     if content:
         response = "HTTP/1.1 200 OK\r\n"
         response += "Content-Type: application/octet-stream\r\n"
+        if compression != "":
+            response += f"Accept-Encoding: {compression}\r\n"
         response += f"Content-Length: {len(content)}\r\n"
         response += "\r\n"
         response += f"{content}\r\n"
@@ -96,29 +108,33 @@ def get_file_endpoint(path:str) -> str:
         return "HTTP/1.1 404 Not Found\r\n\r\n"
 
 
-def user_agent_endpoint(request_array:list) -> str:
+def user_agent_endpoint(request_array:list,compression:str="") -> str:
     agent = ""
     for index,content in enumerate(request_array):
         if content == "User-Agent:":
             agent = request_array[index+1]
     response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
+    if compression != "":
+        response += f"Accept-Encoding: {compression}\r\n"
     response += f"Content-Length: {len(agent)}\r\n"
     response += "\r\n"
     response += f"{agent}\r\n"
     return response
 
-def echo_endpoint(path:str) -> str:
+def echo_endpoint(path:str,compression:str="") -> str:
     path_array = path.split("/")
     echo = path_array[-1]
     response = "HTTP/1.1 200 OK\r\n"
     response += "Content-Type: text/plain\r\n"
+    if compression != "":
+        response += f"Accept-Encoding: {compression}\r\n"
     response += f"Content-Length: {len(echo)}\r\n"
     response += "\r\n"
     response += f"{echo}\r\n"
     return response
 
-def root_endpoint() -> str:
+def root_endpoint(compression:str="") -> str:
     response = "HTTP/1.1 200 OK\r\n\r\n"
     return response
 
