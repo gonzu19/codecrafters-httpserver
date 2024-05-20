@@ -1,4 +1,4 @@
-from os import confstr
+#from os import confstr
 import socket
 import sys
 
@@ -11,7 +11,7 @@ def start_server():
     
 def process_socket(server_socket) -> None:
     # Accept a client connection
-    client_socket, client_address = server_socket.accept()
+    client_socket, __client_address = server_socket.accept()
     #print(f"Accepted connection from {client_address}")
     # Receive the request from the client, 1024 is the maximum buffsize
     request = client_socket.recv(1024).decode('utf-8')
@@ -65,7 +65,7 @@ def build_response(request_array:list) -> str:
 def get_compression_parameter(request_array:list) -> str:
     if "Accept-Encoding:" not in request_array:
         return ""
-    for index,element in request_array:
+    for index,element in enumerate(request_array):
         if element == "Accept-Encoding:":
             compression = request_array[index+1]
     return compression
@@ -139,6 +139,8 @@ def echo_endpoint(path:str,compression:str="") -> str:
 
 def root_endpoint(compression:str="") -> str:
     response = "HTTP/1.1 200 OK\r\n\r\n"
+    if compression != "":
+        response += f"Content-Encoding: {compression}\r\n"
     return response
 
 def main():
