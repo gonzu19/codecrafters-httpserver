@@ -68,6 +68,9 @@ def get_compression_parameter(request_array:list) -> str:
     for index,element in enumerate(request_array):
         if element == "Accept-Encoding:":
             compression = request_array[index+1]
+    not_allowed_compressions = ["invalid-encoding"]
+    if compression in not_allowed_compressions:
+        return ""
     return compression
 
 def read_file(filename:str):
