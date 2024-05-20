@@ -25,7 +25,20 @@ def process_socket(server_socket) -> None:
     # Close the client connection
     client_socket.close()
 
-def build_response(request_array:str) -> str:
+def parse_body_content(request_array:list) -> str:
+    content = None
+    for index,element in enumerate(request_array):
+        if element == "Content-length":
+            content = request_array[index+2:]
+        result = ""
+    if content:
+        for elem in content:
+            result = f"{elem} "
+        return result.rstrip()
+    else:
+        return ""
+
+def build_response(request_array:list) -> str:
     """prepare http response"""
     path = request_array[1]
     action = request_array[0]
@@ -85,7 +98,7 @@ def get_file_endpoint(path:str) -> str:
         return "HTTP/1.1 404 Not Found\r\n\r\n"
 
 
-def user_agent_endpoint(request_array:str) -> str:
+def user_agent_endpoint(request_array:list) -> str:
     agent = ""
     for index,content in enumerate(request_array):
         if content == "User-Agent:":
