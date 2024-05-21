@@ -38,7 +38,8 @@ class MyHTTPServer():
             self.which_endpoint()
             self.build_response()
             # Send the response to the client
-            client_socket.sendall(f"{self.response.encode('utf-8')}\r\n\r\n{self.body}")
+            self.response = str(self.response) + str(self.body)
+            client_socket.sendall(self.response.encode('utf-8'))
             print(f"Sent response:\n{self.response}")
             # Close the client connection
             client_socket.close()
