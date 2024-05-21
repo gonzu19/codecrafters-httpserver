@@ -42,8 +42,9 @@ class MyHTTPServer():
         if self.body != "":
             self.response += f"Content-Length: {len(self.body)}\r\n"
         for element in self.headers:
+
             self.response +=  f"{element}"
-        self.response += self.body
+        self.response += f"\r\n{self.body}"
         self.response += "\r\n"
         
 
