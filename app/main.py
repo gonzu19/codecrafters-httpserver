@@ -5,12 +5,6 @@ import gzip
 
 class MyHTTPServer():
     def __init__(self) -> None:     
-        #self.status = ""
-        #self.headers = []
-        #self.body = ""
-        #self.encoding = ""
-        #self.path = ""
-        #self.content_type = ""
         server_socket = self.start_server()
         self.process_socket(server_socket=server_socket)
 
@@ -63,7 +57,7 @@ class MyHTTPServer():
             self.response +=  f"{element}"
         if "gzip" in self.encoding:
             compressed_body = gzip.compress(self.body.encode('utf-8'))
-            self.response += str(compressed_body)
+            self.response += f"{compressed_body}"
         else:
             self.response += f"\r\n{self.body}"
         self.response += "\r\n"
