@@ -8,6 +8,7 @@ class MyHTTPServer():
         self.headers = []
         self.body = ""
         self.encoding = ""
+        self.path = ""
         server_socket = self.start_server()
         self.process_socket(server_socket=server_socket)
 
@@ -23,6 +24,7 @@ class MyHTTPServer():
         self.headers = []
         self.body = ""
         self.encoding = ""
+        self.path = ""
     
     def process_socket(self,server_socket) -> None:
         while True:
@@ -76,19 +78,19 @@ class MyHTTPServer():
 
     def which_endpoint(self) -> None:
         """prepare http response"""
-        path = self.request_array[1]
+        self.path = self.request_array[1]
         action = self.request_array[0]
         self.get_compression_parameter()
-        if path == "/":
+        if self.path == "/":
             self.root_endpoint()
-        elif path.startswith("/echo/"):
-            self.echo_endpoint(path)
-        elif path == "/user-agent":
+        elif self.path.startswith("/echo/"):
+            self.echo_endpoint()
+        elif self.path == "/user-agent":
             self.user_agent_endpoint()
-        elif path.startswith("/files/") and action == "GET":
-            self.get_file_endpoint(path)
-        elif path.startswith("/files/") and action == "POST":
-            self.post_file_endpoint(path,)
+        elif self.path.startswith("/files/") and action == "GET":
+            self.get_file_endpoint()
+        elif self.path.startswith("/files/") and action == "POST":
+            self.post_file_endpoint()
         else:
             print("DEBUG: NO ENDPOINT FOUND")
             self.status = "HTTP/1.1 404 Not Found\r\n"
@@ -111,17 +113,17 @@ class MyHTTPServer():
                 if element[-1] != ",":
                     return
 
-    def post_file_endpoint(self,path:str) -> None:
+    def post_file_endpoint(self) -> None:
         content = self.parse_body_content()
-        path_array = path.split("/")
+        path_array = self.path.split("/")
         file = sys.argv[2] #this is the file path passed as a parameter
         file += path_array[-1]
         write_file(filename=file,content=content)
         self.status = "HTTP/1.1 201 Created\r\n"
 
 
-    def get_file_endpoint(self,path:str) -> None:
-        path_array = path.split("/")
+    def get_file_endpoint(self) -> None:
+        path_array = self.path.split("/")
         file = sys.argv[2]
         file += path_array[-1]
         content = read_file(filename=file)
@@ -144,8 +146,8 @@ class MyHTTPServer():
         self.headers.append("text/plain\r\n")
         self.body =  f"{agent}"
 
-    def echo_endpoint(self,path:str) -> None:
-        path_array = path.split("/")
+    def echo_endpoint(self) -> None:
+        path_array = self.path.split("/")
         echo = path_array[-1]
         self.status = "HTTP/1.1 200 OK\r\n"
         self.headers.append("Content-Type:") 
