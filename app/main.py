@@ -5,11 +5,12 @@ import gzip
 
 class MyHTTPServer():
     def __init__(self) -> None:     
-        self.status = ""
-        self.headers = []
-        self.body = ""
-        self.encoding = ""
-        self.path = ""
+        #self.status = ""
+        #self.headers = []
+        #self.body = ""
+        #self.encoding = ""
+        #self.path = ""
+        #self.content_type = ""
         server_socket = self.start_server()
         self.process_socket(server_socket=server_socket)
 
@@ -26,6 +27,7 @@ class MyHTTPServer():
         self.body = ""
         self.encoding = ""
         self.path = ""
+        self.content_type = ""
     
     def process_socket(self,server_socket) -> None:
         while True:
@@ -54,6 +56,7 @@ class MyHTTPServer():
             self.response += "\r\n"
             return
         self.response += f"Content-Length: {len(self.body)}\r\n"
+        self.response += f"Content-Type: {self.content_type}\r\n"
         if self.encoding != "":
             self.response += f"Content-Encoding: {self.encoding}\r\n"
         for element in self.headers:
@@ -134,8 +137,7 @@ class MyHTTPServer():
         content = read_file(filename=file)
         if content:
             self.status = "HTTP/1.1 200 OK\r\n"
-            self.headers.append("Content-Type:") 
-            self.headers.append("application/octet-stream\r\n")
+            self.content_type = "application/octet-stream"
             self.body = f"{content}"
         else:
             self.status = "HTTP/1.1 404 Not Found\r\n"
@@ -147,16 +149,14 @@ class MyHTTPServer():
             if content == "User-Agent:":
                 agent = self.request_array[index+1]
         self.status = "HTTP/1.1 200 OK\r\n"
-        self.headers.append("Content-Type:") 
-        self.headers.append("text/plain\r\n")
+        self.content_type = "text/plain"
         self.body =  f"{agent}"
 
     def echo_endpoint(self) -> None:
         path_array = self.path.split("/")
         echo = path_array[-1]
         self.status = "HTTP/1.1 200 OK\r\n"
-        self.headers.append("Content-Type:") 
-        self.headers.append("text/plain\r\n")
+        self.content_type = "text/plain"
         self.body = f"{echo}"
 
     def root_endpoint(self) -> None:
