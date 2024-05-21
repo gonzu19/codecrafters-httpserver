@@ -102,12 +102,14 @@ class MyHTTPServer():
             stripped_element = element.rstrip(",")
             if element == "Accept-Encoding:":
                 encoding_evaluation = True
-            if encoding_evaluation:
+            if encoding_evaluation and element != "Accept-Encoding:":
                 if stripped_element in allowed_compressions:
                     if self.encoding == "":
                         self.encoding += stripped_element
                     else:
                         self.encoding += f",{stripped_element}"
+                if element[-1] != ",":
+                    return
 
     def post_file_endpoint(self,path:str) -> None:
         content = self.parse_body_content()
