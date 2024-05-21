@@ -41,9 +41,10 @@ class MyHTTPServer():
         self.response = self.status
         print(f"DEBUG {self.response}")
         for element in self.headers:
-            self.response +=  f"{element}\n"
+            self.response +=  f"{element}"
         if self.body != "":
-            self.response += f"Content-Length {len(self.body)} {self.body}\r\n"
+            self.response += f"Content-Length {len(self.body)}\r\n{self.body}"
+        self.response += "\r\n"
         
 
     def parse_body_content(self,request_array:list) -> str:
@@ -78,7 +79,7 @@ class MyHTTPServer():
             self.post_file_endpoint(path,request_array=request_array)
         else:
             print("DEBUG: NO ENDPOINT FOUND")
-            self.status = "HTTP/1.1 404 Not Found\r\n\r\n"
+            self.status = "HTTP/1.1 404 Not Found\r\n"
 
     def get_compression_parameter(self,request_array:list) -> None:
         not_allowed_compressions = ["invalid-encoding"]
@@ -87,7 +88,7 @@ class MyHTTPServer():
         for index,element in enumerate(request_array):
             if element == "Accept-Encoding:" and request_array[index+1] not in not_allowed_compressions:
                 self.headers.append("Accept-Encoding:")
-                self.headers.append(request_array[index+1])
+                self.headers.append(f"{request_array[index+1]}\r\n")
 
     def post_file_endpoint(self,path:str,request_array:list) -> None:
         content = self.parse_body_content(request_array=request_array)
@@ -95,7 +96,7 @@ class MyHTTPServer():
         file = sys.argv[2] #this is the file path passed as a parameter
         file += path_array[-1]
         write_file(filename=file,content=content)
-        self.status = "HTTP/1.1 201 Created\r\n\r\n"
+        self.status = "HTTP/1.1 201 Created\r\n"
 
 
     def get_file_endpoint(self,path:str) -> None:
@@ -109,7 +110,7 @@ class MyHTTPServer():
             self.headers.append("application/octet-stream\r\n")
             self.body = f"{content}"
         else:
-            self.status = "HTTP/1.1 404 Not Found\r\n\r\n"
+            self.status = "HTTP/1.1 404 Not Found\r\n"
 
 
     def user_agent_endpoint(self,request_array:list) -> None:
@@ -131,7 +132,7 @@ class MyHTTPServer():
         self.body = f"{echo}"
 
     def root_endpoint(self) -> None:
-        self.status = "HTTP/1.1 200 OK\r\n\r\n"
+        self.status = "HTTP/1.1 200 OK\r\n"
 
 def read_file(filename:str):
     try:
