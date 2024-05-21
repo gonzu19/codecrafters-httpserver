@@ -44,12 +44,13 @@ class MyHTTPServer():
             print("---------socket_closed-----------")
 
     def build_response(self) -> None:
+        print(f"debugg****{self.encoding}")
         self.response = self.status
         if self.body == "":
             return
         self.response += f"Content-Length: {len(self.body)}\r\n"
         if self.encoding != "":
-            self.response += f"Content-Encoding: {self.encoding}"
+            self.response += f"Content-Encoding: {self.encoding}\r\n"
         for element in self.headers:
             self.response +=  f"{element}"
         self.response += f"\r\n{self.body}"
@@ -96,7 +97,7 @@ class MyHTTPServer():
             return
         encoding_evaluation = False
         for element in request_array:
-            if element == "Accept-Encoding":
+            if element == "Accept-Encoding:":
                 encoding_evaluation = True
             if encoding_evaluation:
                 if element in allowed_compressions:
