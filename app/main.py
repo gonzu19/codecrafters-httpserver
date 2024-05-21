@@ -54,7 +54,7 @@ class MyHTTPServer():
         
 
     def parse_body_content(self,request_array:list) -> str:
-        content_start = -1
+        content_start = -1#placeholder
         for index,element in enumerate(request_array):
             if element in self.headers:
             #if element == "Content-Length:" or element == "Content-Type:":
