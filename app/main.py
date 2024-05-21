@@ -7,6 +7,7 @@ class MyHTTPServer():
         self.status = ""
         self.headers = []
         self.body = ""
+        self.encoding = ""
         server_socket = self.start_server()
         self.process_socket(server_socket=server_socket)
 
@@ -44,10 +45,12 @@ class MyHTTPServer():
 
     def build_response(self) -> None:
         self.response = self.status
-        if self.body != "":
-            self.response += f"Content-Length: {len(self.body)}\r\n"
+        if self.body == "":
+            return
+        self.response += f"Content-Length: {len(self.body)}\r\n"
+        if self.encoding != "":
+            self.response += f"Content-Encoding: {self.encoding}"
         for element in self.headers:
-
             self.response +=  f"{element}"
         self.response += f"\r\n{self.body}"
         self.response += "\r\n"
@@ -89,23 +92,18 @@ class MyHTTPServer():
 
     def get_compression_parameter(self,request_array:list) -> None:
         allowed_compressions = ["gzip"]
-        accepted_encodings = []
         if "Accept-Encoding:" not in request_array:
             return
-        evaluate_encoding = False
+        encoding_evaluation = False
         for element in request_array:
-            if element == "Accept-Encoding:":
-                evaluate_encoding = True
-            if evaluate_encoding:
+            if element == "Accept-Encoding":
+                encoding_evaluation = True
+            if encoding_evaluation:
                 if element in allowed_compressions:
-                    accepted_encodings.append(element)
-        print(f"DEBUGS**** {accepted_encodings}")
-        encodings = f"{accepted_encodings[0]}"
-        for idx,elem in enumerate(accepted_encodings):
-            if idx != 0:
-                encodings += f",{elem}"
-        self.headers.append("Content-Encoding:")
-        self.headers.append(f"{encodings}\r\n")
+                    if self.encoding == "":
+                        self.encoding += element
+                    else:
+                        self.encoding += f",{element}"
 
     def post_file_endpoint(self,path:str,request_array:list) -> None:
         content = self.parse_body_content(request_array=request_array)
