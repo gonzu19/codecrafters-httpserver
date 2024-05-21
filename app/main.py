@@ -22,6 +22,7 @@ class MyHTTPServer():
         self.encoding = ""
         self.path = ""
         self.content_type = ""
+        self.response = ""
     
     def process_socket(self,server_socket) -> None:
         while True:
@@ -37,7 +38,7 @@ class MyHTTPServer():
             self.which_endpoint()
             self.build_response()
             # Send the response to the client
-            client_socket.sendall(self.response.encode('utf-8'))
+            client_socket.sendall(f"{self.response.encode('utf-8')}\r\n\r\n{self.body}")
             print(f"Sent response:\n{self.response}")
             # Close the client connection
             client_socket.close()
@@ -56,11 +57,7 @@ class MyHTTPServer():
         for element in self.headers:
             self.response +=  f"{element}"
         if "gzip" in self.encoding:
-            compressed_body = gzip.compress(self.body.encode('utf-8'))
-            self.response += f"{compressed_body[1:]}"
-        else:
-            self.response += f"\r\n{self.body}"
-        self.response += "\r\n"
+            self.body = gzip.compress(self.body.encode('utf-8'))
         
 
     def parse_body_content(self) -> str:
