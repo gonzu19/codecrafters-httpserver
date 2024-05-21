@@ -10,16 +10,21 @@ class MyHTTPServer():
         server_socket = self.start_server()
         self.process_socket(server_socket=server_socket)
 
-
     def start_server(self):
         # Print statements for debugging
         # Create and configure the server socket
         server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
         print("Server is listening on localhost:4221")
         return server_socket
+
+    def reset_parameters(self) -> None:
+        self.status = ""
+        self.headers = []
+        self.body = ""
     
     def process_socket(self,server_socket) -> None:
         while True:
+            self.reset_parameters()
             # Accept a client connection
             client_socket, __client_address = server_socket.accept()
             #print(f"Accepted connection from {client_address}")
