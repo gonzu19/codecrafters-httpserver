@@ -32,10 +32,10 @@ class MyHTTPServer():
             #print(f"Accepted connection from {client_address}")
             # Receive the request from the client, 1024 is the maximum buffsize
             request = client_socket.recv(1024).decode('utf-8')
-            request_array = request.split()
+            self.request_array = request.split()
             print("---------socket_start-----------")
-            print(f"Received request:\n{request_array}")
-            self.which_endpoint(request_array=request_array)
+            print(f"Received request:\n{self.request_array}")
+            self.which_endpoint()
             self.build_response()
             # Send the response to the client
             client_socket.sendall(self.response.encode('utf-8'))
@@ -59,13 +59,13 @@ class MyHTTPServer():
         self.response += "\r\n"
         
 
-    def parse_body_content(self,request_array:list) -> str:
+    def parse_body_content(self) -> str:
         content_start = -1#placeholder
         header_names = ["Content-Length:","Accept-Encoding","Content-type","Agent-user"] #maybebug
-        for index,element in enumerate(request_array):
+        for index,element in enumerate(self.request_array):
             if element in header_names:
                 content_start = index+2 
-        content = request_array[content_start:]
+        content = self.request_array[content_start:]
         result = ""
         if content:
             for elem in content:
@@ -74,31 +74,31 @@ class MyHTTPServer():
         else:
             return ""
 
-    def which_endpoint(self,request_array:list) -> None:
+    def which_endpoint(self) -> None:
         """prepare http response"""
-        path = request_array[1]
-        action = request_array[0]
-        self.get_compression_parameter(request_array=request_array)
+        path = self.request_array[1]
+        action = self.request_array[0]
+        self.get_compression_parameter()
         if path == "/":
             self.root_endpoint()
         elif path.startswith("/echo/"):
             self.echo_endpoint(path)
         elif path == "/user-agent":
-            self.user_agent_endpoint(request_array=request_array)
+            self.user_agent_endpoint()
         elif path.startswith("/files/") and action == "GET":
             self.get_file_endpoint(path)
         elif path.startswith("/files/") and action == "POST":
-            self.post_file_endpoint(path,request_array=request_array)
+            self.post_file_endpoint(path,)
         else:
             print("DEBUG: NO ENDPOINT FOUND")
             self.status = "HTTP/1.1 404 Not Found\r\n"
 
-    def get_compression_parameter(self,request_array:list) -> None:
+    def get_compression_parameter(self) -> None:
         allowed_compressions = ["gzip"]
-        if "Accept-Encoding:" not in request_array:
+        if "Accept-Encoding:" not in self.request_array:
             return
         encoding_evaluation = False
-        for element in request_array:
+        for element in self.request_array:
             stripped_element = element.rstrip(",")
             if element == "Accept-Encoding:":
                 encoding_evaluation = True
@@ -109,8 +109,8 @@ class MyHTTPServer():
                     else:
                         self.encoding += f",{stripped_element}"
 
-    def post_file_endpoint(self,path:str,request_array:list) -> None:
-        content = self.parse_body_content(request_array=request_array)
+    def post_file_endpoint(self,path:str) -> None:
+        content = self.parse_body_content()
         path_array = path.split("/")
         file = sys.argv[2] #this is the file path passed as a parameter
         file += path_array[-1]
@@ -132,11 +132,11 @@ class MyHTTPServer():
             self.status = "HTTP/1.1 404 Not Found\r\n"
 
 
-    def user_agent_endpoint(self,request_array:list) -> None:
+    def user_agent_endpoint(self) -> None:
         agent = ""
-        for index,content in enumerate(request_array):
+        for index,content in enumerate(self.request_array):
             if content == "User-Agent:":
-                agent = request_array[index+1]
+                agent = self.request_array[index+1]
         self.status = "HTTP/1.1 200 OK\r\n"
         self.headers.append("Content-Type:") 
         self.headers.append("text/plain\r\n")
