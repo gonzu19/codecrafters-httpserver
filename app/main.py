@@ -55,10 +55,10 @@ class MyHTTPServer():
 
     def parse_body_content(self,request_array:list) -> str:
         content_start = -1#placeholder
+        header_names = ["Content-Length:","Accept-Encoding","Content-type","Agent-user"] #maybebug
         for index,element in enumerate(request_array):
-            if element in self.headers:
-            #if element == "Content-Length:" or element == "Content-Type:":
-                content_start = index+1 #maybe bug
+            if element in header_names:
+                content_start = index+2 
         content = request_array[content_start:]
         result = ""
         if content:
@@ -98,6 +98,7 @@ class MyHTTPServer():
 
     def post_file_endpoint(self,path:str,request_array:list) -> None:
         content = self.parse_body_content(request_array=request_array)
+        print(f"DEBUG: {content}")
         path_array = path.split("/")
         file = sys.argv[2] #this is the file path passed as a parameter
         file += path_array[-1]
