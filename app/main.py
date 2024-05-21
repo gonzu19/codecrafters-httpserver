@@ -41,7 +41,7 @@ class MyHTTPServer():
         self.response = self.status
         print(f"DEBUG {self.response}")
         for element in self.headers:
-            self.response +=  f"{element}"
+            self.response +=  f"{element}\n"
         if self.body != "":
             self.response += f"Content-Length {len(self.body)} {self.body}\r\n"
         
