@@ -92,17 +92,13 @@ class MyHTTPServer():
         accepted_encodings = []
         if "Accept-Encoding:" not in request_array:
             return
-        for index,element in enumerate(request_array):
+        evaluate_encoding = False
+        for element in request_array:
             if element == "Accept-Encoding:":
-                if request_array[index+1] in allowed_compressions:
-                    accepted_encodings.append(f"{request_array[index+1]}")
-                while_index = index+2
-                print(f"while index: {while_index}")
-                while while_index < len(request_array) and request_array[while_index] == ",":
-                    print(f"DEBUGGS WHILE: {request_array[index+1]}")
-                    if request_array[index+1] in allowed_compressions:
-                        accepted_encodings.append(request_array[while_index+1])
-                    while_index += 2
+                evaluate_encoding = True
+            if evaluate_encoding:
+                if element in allowed_compressions:
+                    accepted_encodings.append(element)
         print(f"DEBUGS**** {accepted_encodings}")
         encodings = f"{accepted_encodings[0]}"
         for idx,elem in enumerate(accepted_encodings):
