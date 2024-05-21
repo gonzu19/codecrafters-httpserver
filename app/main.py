@@ -38,7 +38,7 @@ class MyHTTPServer():
             self.which_endpoint(request_array=request_array)
             self.build_response()
             # Send the response to the client
-            client_socket.sendall(f"self.response.encode('utf-8')\r\n")
+            client_socket.sendall(self.response.encode('utf-8'))
             print(f"Sent response:\n{self.response}")
             # Close the client connection
             client_socket.close()
@@ -48,6 +48,7 @@ class MyHTTPServer():
         print(f"debugg****{self.encoding}")
         self.response = self.status
         if self.body == "":
+            self.response += "\r\n"
             return
         self.response += f"Content-Length: {len(self.body)}\r\n"
         if self.encoding != "":
@@ -55,6 +56,7 @@ class MyHTTPServer():
         for element in self.headers:
             self.response +=  f"{element}"
         self.response += f"\r\n{self.body}"
+        self.response += "\r\n"
         
 
     def parse_body_content(self,request_array:list) -> str:
