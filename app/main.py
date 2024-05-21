@@ -95,6 +95,9 @@ class MyHTTPServer():
         for index,element in enumerate(request_array):
             if element == "Accept-Encoding:" and request_array[index+1] in allowed_compressions:
                 accepted_encodings.append(f"{request_array[index+1].lower()}\r\n")
+                while_index = index+2
+                while while_index > len(request_array) and request_array[while_index] == ",":
+                    accepted_encodings.append(request_array[while_index+1])
         encodings = f"{accepted_encodings[0]}"
         for idx,elem in enumerate(accepted_encodings):
             if idx != 0:
