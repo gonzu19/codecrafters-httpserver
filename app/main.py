@@ -91,13 +91,14 @@ class MyHTTPServer():
         allowed_compressions = ["gzip"]
         accepted_encodings = []
         if "Accept-Encoding:" not in request_array:
-            return None
+            return
         for index,element in enumerate(request_array):
             if element == "Accept-Encoding:":
                 if request_array[index+1] in allowed_compressions:
                     accepted_encodings.append(f"{request_array[index+1]}")
                 while_index = index+2
                 while while_index > len(request_array) and request_array[while_index] == ",":
+                    print(f"DEBUGGS WHILE: {request_array[index+1]}")
                     if request_array[index+1] in allowed_compressions:
                         accepted_encodings.append(request_array[while_index+1])
                     while_index += 2
