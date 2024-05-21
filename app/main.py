@@ -4,7 +4,7 @@ import sys
 
 class MyHTTPServer():
     def __init__(self) -> None:     
-        self.status = "HTTP/1.1 200 OK\r\n"
+        self.status = ""
         self.headers = []
         self.body = ""
         server_socket = self.start_server()
@@ -29,20 +29,21 @@ class MyHTTPServer():
             print("---------socket_start-----------")
             print(f"Received request:\n{request_array}")
             self.which_endpoint(request_array=request_array)
-            response = self.build_response()
+            self.build_response()
             # Send the response to the client
-            client_socket.sendall(response.encode('utf-8'))
-            print("Sent response:\n" + response)
+            client_socket.sendall(self.response.encode('utf-8'))
+            print(f"Sent response:\n{self.response}")
             # Close the client connection
             client_socket.close()
             print("---------socket_closed-----------")
 
-    def build_response(self) -> str:
-        response = self.status
+    def build_response(self) -> None:
+        self.response = self.status
+        print(f"DEBUG {self.response}")
         for element in self.headers:
-            response += f" {response} {element}"
-        response += f"Content-Length {len(self.body)} {self.body}"
-        return response
+            self.response +=  f"{element}"
+        if self.body != "":
+            self.response += f"Content-Length {len(self.body)} {self.body}\r\n"
         
 
     def parse_body_content(self,request_array:list) -> str:
@@ -106,7 +107,7 @@ class MyHTTPServer():
             self.status = "HTTP/1.1 200 OK\r\n"
             self.headers.append("Content-Type:") 
             self.headers.append("application/octet-stream\r\n")
-            self.body = f"{content}\r\n"
+            self.body = f"{content}"
         else:
             self.status = "HTTP/1.1 404 Not Found\r\n\r\n"
 
@@ -119,7 +120,7 @@ class MyHTTPServer():
         self.status = "HTTP/1.1 200 OK\r\n"
         self.headers.append("Content-Type:") 
         self.headers.append("text/plain\r\n")
-        self.body =  f"{agent}\r\n"
+        self.body =  f"{agent}"
 
     def echo_endpoint(self,path:str) -> None:
         path_array = path.split("/")
@@ -127,7 +128,7 @@ class MyHTTPServer():
         self.status = "HTTP/1.1 200 OK\r\n"
         self.headers.append("Content-Type:") 
         self.headers.append("text/plain\r\n")
-        self.body = f"{echo}\r\n"
+        self.body = f"{echo}"
 
     def root_endpoint(self) -> None:
         self.status = "HTTP/1.1 200 OK\r\n\r\n"
