@@ -97,7 +97,8 @@ class MyHTTPServer():
                 if request_array[index+1] in allowed_compressions:
                     accepted_encodings.append(f"{request_array[index+1]}")
                 while_index = index+2
-                while while_index > len(request_array) and request_array[while_index] == ",":
+                print(f"while index: {while_index}")
+                while while_index < len(request_array) and request_array[while_index] == ",":
                     print(f"DEBUGGS WHILE: {request_array[index+1]}")
                     if request_array[index+1] in allowed_compressions:
                         accepted_encodings.append(request_array[while_index+1])
