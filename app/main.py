@@ -97,14 +97,15 @@ class MyHTTPServer():
             return
         encoding_evaluation = False
         for element in request_array:
+            stripped_element = element.rstrip(",")
             if element == "Accept-Encoding:":
                 encoding_evaluation = True
             if encoding_evaluation:
-                if element in allowed_compressions:
+                if stripped_element in allowed_compressions:
                     if self.encoding == "":
-                        self.encoding += element
+                        self.encoding += stripped_element
                     else:
-                        self.encoding += f",{element}"
+                        self.encoding += f",{stripped_element}"
 
     def post_file_endpoint(self,path:str,request_array:list) -> None:
         content = self.parse_body_content(request_array=request_array)
