@@ -57,7 +57,7 @@ class MyHTTPServer():
             self.response +=  f"{element}"
         if "gzip" in self.encoding:
             compressed_body = gzip.compress(self.body.encode('utf-8'))
-            self.response += f"{compressed_body.decode('utf-8')}"
+            self.response += f"{compressed_body[1:]}"
         else:
             self.response += f"\r\n{self.body}"
         self.response += "\r\n"
