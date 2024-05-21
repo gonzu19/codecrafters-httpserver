@@ -22,6 +22,7 @@ class MyHTTPServer():
         self.status = ""
         self.headers = []
         self.body = ""
+        self.encoding = ""
     
     def process_socket(self,server_socket) -> None:
         while True:
