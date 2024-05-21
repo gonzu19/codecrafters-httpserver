@@ -88,13 +88,19 @@ class MyHTTPServer():
             self.status = "HTTP/1.1 404 Not Found\r\n"
 
     def get_compression_parameter(self,request_array:list) -> None:
-        not_allowed_compressions = ["invalid-encoding"]
+        allowed_compressions = ["gzip"]
+        accepted_encodings = []
         if "Accept-Encoding:" not in request_array:
             return
         for index,element in enumerate(request_array):
-            if element == "Accept-Encoding:" and request_array[index+1] not in not_allowed_compressions:
-                self.headers.append("Content-Encoding:")
-                self.headers.append(f"{request_array[index+1].lower()}\r\n")
+            if element == "Accept-Encoding:" and request_array[index+1] in allowed_compressions:
+                self.accepted_encodings.append(f"{request_array[index+1].lower()}\r\n")
+        encodings = f"{accepted_encodings[0]}"
+        for idx,elem in enumerate(accepted_encodings):
+            if idx != 0:
+                encodings += f",{elem}"
+        self.headers.append("Content-Encoding:")
+        self.headers.append(f"{encodings}")
 
     def post_file_endpoint(self,path:str,request_array:list) -> None:
         content = self.parse_body_content(request_array=request_array)
