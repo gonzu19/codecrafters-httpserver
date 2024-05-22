@@ -5,6 +5,11 @@ import gzip
 
 class MyHTTPServer():
     def __init__(self) -> None:     
+        self.status = ""
+        self.headers = []
+        self.body = ""
+        self.encoding = ""
+        self.path = ""
         server_socket = self.start_server()
         self.process_socket(server_socket=server_socket)
 
@@ -21,8 +26,6 @@ class MyHTTPServer():
         self.body = ""
         self.encoding = ""
         self.path = ""
-        self.content_type = ""
-        self.response = ""
     
     def process_socket(self,server_socket) -> None:
         while True:
@@ -38,7 +41,6 @@ class MyHTTPServer():
             self.which_endpoint()
             self.build_response()
             # Send the response to the client
-            self.response = str(self.response) + "\r\n" + str(self.body)
             client_socket.sendall(self.response.encode('utf-8'))
             print(f"Sent response:\n{self.response}")
             # Close the client connection
@@ -48,23 +50,19 @@ class MyHTTPServer():
     def build_response(self) -> None:
         print(f"debugg****{self.encoding}")
         self.response = self.status
-        if self.encoding == "gzip":
-            self.content_type = "gzip-encoded-data"
         if self.body == "":
             self.response += "\r\n"
-            print("DEBUG*** BODY IS EMPTY")
-            return None
-        if "gzip" in self.encoding and self.body != "":
-            compressed_body = gzip.compress(self.body.encode('utf-8'))
-            self.body = compressed_body.hex()
-            print(f"DEBUGCOMPRESSION*** {self.body}")
-        self.response += f"Content-Length: {len(str(self.body))}\r\n"
-        self.response += f"Content-Type: {self.content_type}\r\n"
+            return
+        if self.encoding == "gzip":
+            self.body = gzip.compress(self.body.encode("utf-8"))
+            self.body = str(self.body)
+        self.response += f"Content-Length: {len(self.body)}\r\n"
         if self.encoding != "":
             self.response += f"Content-Encoding: {self.encoding}\r\n"
         for element in self.headers:
             self.response +=  f"{element}"
-            #self.body = self.body.decode('utf-8')
+        self.response += f"\r\n{self.body}"
+        self.response += "\r\n"
         
 
     def parse_body_content(self) -> str:
@@ -135,7 +133,8 @@ class MyHTTPServer():
         content = read_file(filename=file)
         if content:
             self.status = "HTTP/1.1 200 OK\r\n"
-            self.content_type = "application/octet-stream"
+            self.headers.append("Content-Type:") 
+            self.headers.append("application/octet-stream\r\n")
             self.body = f"{content}"
         else:
             self.status = "HTTP/1.1 404 Not Found\r\n"
@@ -147,14 +146,16 @@ class MyHTTPServer():
             if content == "User-Agent:":
                 agent = self.request_array[index+1]
         self.status = "HTTP/1.1 200 OK\r\n"
-        self.content_type = "text/plain"
+        self.headers.append("Content-Type:") 
+        self.headers.append("text/plain\r\n")
         self.body =  f"{agent}"
 
     def echo_endpoint(self) -> None:
         path_array = self.path.split("/")
         echo = path_array[-1]
         self.status = "HTTP/1.1 200 OK\r\n"
-        self.content_type = "text/plain"
+        self.headers.append("Content-Type:") 
+        self.headers.append("text/plain\r\n")
         self.body = f"{echo}"
 
     def root_endpoint(self) -> None:

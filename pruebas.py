@@ -13,7 +13,15 @@ foo = "foo"
 foo = foo.encode("utf-8")
 
 foo = gzip_encode(foo)
-foo = foo.hex()
+foo = foo.hex().rstrip()
 print(foo)
 print(output)
 print(foo == output)
+
+foo2 = "foo"
+foo2 = gzip.compress(foo2.encode("utf-8"))
+print(gzip.decompress(foo2))
+foo2 = foo2.hex()
+
+print(foo == foo2)
+print(foo2 == output)
