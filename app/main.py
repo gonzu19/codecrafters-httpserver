@@ -55,7 +55,7 @@ class MyHTTPServer():
             return
         if self.encoding == "gzip":
             self.body = gzip.compress(self.body.encode("utf-8"))
-            self.body = str(self.body)
+            self.body = str(self.body.hex())
         self.response += f"Content-Length: {len(self.body)}\r\n"
         if self.encoding != "":
             self.response += f"Content-Encoding: {self.encoding}\r\n"
