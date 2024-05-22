@@ -55,7 +55,6 @@ class MyHTTPServer():
             print("DEBUG*** BODY IS EMPTY")
             return None
         if "gzip" in self.encoding and self.body != "":
-            self.body += "\r\n"
             compressed_body = gzip.compress(self.body.encode('utf-8'))
             self.body = compressed_body.hex()
             print(f"DEBUGCOMPRESSION*** {self.body}")
