@@ -48,18 +48,22 @@ class MyHTTPServer():
     def build_response(self) -> None:
         print(f"debugg****{self.encoding}")
         self.response = self.status
+        if self.encoding == "gzip":
+            self.content_type = "gzip-encoded-data"
         if self.body == "":
             self.response += "\r\n"
-            return
-        self.response += f"Content-Length: {len(self.body)}\r\n"
+            print("DEBUG*** BODY IS EMPTY")
+            return None
+        if "gzip" in self.encoding and self.body != "":
+            self.body = gzip.compress(self.body.encode('utf-8'))
+            print(f"DEBUGCOMPRESSION*** {self.body}")
+        self.response += f"Content-Length: {len(str(self.body))}\r\n"
         self.response += f"Content-Type: {self.content_type}\r\n"
         if self.encoding != "":
             self.response += f"Content-Encoding: {self.encoding}\r\n"
         for element in self.headers:
             self.response +=  f"{element}"
-        if "gzip" in self.encoding:
-            self.body = gzip.compress(self.body.encode('utf-8'))
-            self.body = self.body.decode('utf-8')
+            #self.body = self.body.decode('utf-8')
         
 
     def parse_body_content(self) -> str:
