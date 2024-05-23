@@ -138,8 +138,8 @@ class MyHTTPServer():
         content = read_file(filename=file)
         if content:
             self.status = "HTTP/1.1 200 OK"
-            self.content_type = "text/plain"
-            #self.content_type = "application/octet-stream"
+            #self.content_type = "text/plain"
+            self.content_type = "application/octet-stream"
             self.body = f"{content}"
         else:
             self.status = "HTTP/1.1 404 Not Found"
